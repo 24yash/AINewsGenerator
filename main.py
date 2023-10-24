@@ -1,5 +1,5 @@
 import openai
-import os 
+from openai.error import AuthenticationError
 from flask import Flask, render_template, redirect, request, flash, session, url_for
 from sqlalchemy.sql.expression import desc
 
@@ -14,6 +14,8 @@ db.init_app(app)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    if "api_key" in session:
+      print(session['api_key'])
     if request.method == "POST":
         if "api_key" not in session:
             # If API key doesn't exist in the session, redirect to the API key form.
@@ -32,44 +34,48 @@ def index():
                   Article:
                   Prompt for thumbnail image:
                   """
-                response = openai.Completion.create(model="text-davinci-003",
-                                                        prompt=gpt_prompt,
-                                                        temperature=0.7,
-                                                        max_tokens=500,
-                                                        top_p=1,
-                                                        frequency_penalty=0,
-                                                        presence_penalty=0)
-
-                response = response["choices"][0]["text"]
-
-                start_headline = response.index("Headline:") + len("Headline:")
-                end_headline = response.index("Subheading:")
-                start_subheading = response.index("Subheading:") + len("Subheading:")
-                end_subheading = response.index("Summary:")
-                start_summary = response.index("Summary:") + len("Summary:")
-                end_summary = response.index("Article:")
-                start_article = response.index("Article:") + len("Article:")
-                end_article = response.lower().index("prompt for thumbnail image:")
-
-                headline = response[start_headline:end_headline].strip()
-                subheading = response[start_subheading:end_subheading].strip()
-                summary = response[start_summary:end_summary].strip()
-                article = response[start_article:end_article].strip()
-
-                headline = str(headline)
-                subheading = str(subheading)
-                summary = str(summary)
-                article = str(article)
-
-                new_article = Article(prompt=prompt, headline=headline, subheading=subheading, summary=summary, article=article)
                 try:
-                  db.session.add(new_article)
-                  db.session.commit()
-                  return redirect("/")
-                except:
-                  return "There was a problem processing. Please go Back!"
-                # Rest of your code for generating articles.
-                # ...
+                    response = openai.Completion.create(model="text-davinci-003",
+                                                            prompt=gpt_prompt,
+                                                            temperature=0.7,
+                                                            max_tokens=500,
+                                                            top_p=1,
+                                                            frequency_penalty=0,
+                                                            presence_penalty=0)
+
+                    response = response["choices"][0]["text"]
+
+                    start_headline = response.index("Headline:") + len("Headline:")
+                    end_headline = response.index("Subheading:")
+                    start_subheading = response.index("Subheading:") + len("Subheading:")
+                    end_subheading = response.index("Summary:")
+                    start_summary = response.index("Summary:") + len("Summary:")
+                    end_summary = response.index("Article:")
+                    start_article = response.index("Article:") + len("Article:")
+                    end_article = response.lower().index("prompt for thumbnail image:")
+
+                    headline = response[start_headline:end_headline].strip()
+                    subheading = response[start_subheading:end_subheading].strip()
+                    summary = response[start_summary:end_summary].strip()
+                    article = response[start_article:end_article].strip()
+
+                    headline = str(headline)
+                    subheading = str(subheading)
+                    summary = str(summary)
+                    article = str(article)
+
+                    new_article = Article(prompt=prompt, headline=headline, subheading=subheading, summary=summary, article=article)
+                    try:
+                        db.session.add(new_article)
+                        db.session.commit()
+                        return redirect("/")
+                    except:
+                        return "There was a problem processing. Please go Back!"
+                except AuthenticationError:
+                    flash('Incorrect API key provided. Please provide a valid API key.')
+                    session.pop('api_key', None)  # Remove incorrect key from the session
+                    return redirect(url_for('api_key_form'))
+                    
               
 
     else:
