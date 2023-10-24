@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %} Article {% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <h1 class="display-4"><em>{{ article["headline"] }}</em></h1>
+  <p>{{ article["summary"] }}</p>
+  <p>{{ article["article"] }}</p>
+</div>
+{% endblock %}

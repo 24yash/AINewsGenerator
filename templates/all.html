@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %} Home {% endblock %}
+{% block content %}
+<hr class="my-4">
+<div class="container mt-5" >
+  <div class="text-center" style="width: 80%; margin: 0 auto;">
+    <form method="post" class="mb-4">
+      <h6 class="form-label">Submit a Prompt and have GPT produce the news:</h6>
+      <p class="form-text">It takes about 1 minute. You'll be redirected to this page with your article top of the list or an error page.</p>
+      <input type="text" name="prompt" class="form-control" required>
+      <br>
+      <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+  </div>
+</div>
+<hr class="my-4">
+<div class="container mt-5">
+  <div class="latest-div">
+  </div>
+  <div class="article-list">
+    {% for article in articles %}
+    <div class="list-item mb-4">
+      <div class="list-content-wrap">
+        <div class="text-center" style="width: 80%; margin: 0 auto;"> <!-- Center content with 80% width -->
+          <a href="/article/{{ article["id"] }}" style="text-decoration: none; color: black;"> <!-- Set text to black and remove underline -->
+            <div class="list-text-wrap">
+              <h2 class="list-heading">{{ article["headline"] }}</h2>
+              <p class="list-summary">{{ article["summary"] }}</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+    <hr class="my-4"> <!-- Added horizontal line and vertical spacing -->
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

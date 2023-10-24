@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %} API Key Form {% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <form method="post" class="mb-4">
+    <h2 class="mb-3">Provide your OpenAI API Key</h2>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-danger">
+          {{ messages[0] }}
+        </div>
+      {% endif %}
+    {% endwith %}
+    <div class="mb-3">
+      <label for="api_key" class="form-label">API Key</label>
+      <input type="text" name="api_key" class="form-control" required>
+    </div>
+    <button class="btn btn-primary" type="submit">Submit</button>
+  </form>
+</div>
+{% endblock %}
