@@ -8,7 +8,7 @@ from models import *
 app = Flask(__name__)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///datablog.sqlite3"
-app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with your secret key
+app.config['SECRET_KEY'] = 'my_secret_key'
 app.app_context().push()
 db.init_app(app)
 
